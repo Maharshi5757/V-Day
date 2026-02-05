@@ -332,12 +332,6 @@
       animation: heartPulse 1.2s ease-in-out infinite;
     }
 
-    .hearts-burst .heart-ani:nth-child(1) { animation-delay: 0s; }
-    .hearts-burst .heart-ani:nth-child(2) { animation-delay: 0.15s; }
-    .hearts-burst .heart-ani:nth-child(3) { animation-delay: 0.3s; }
-    .hearts-burst .heart-ani:nth-child(4) { animation-delay: 0.45s; }
-    .hearts-burst .heart-ani:nth-child(5) { animation-delay: 0.6s; }
-
     @keyframes heartsBurst {
       0% { transform: scale(0); opacity: 0; }
       50% { transform: scale(1.2); opacity: 1; }
@@ -399,7 +393,7 @@
       <canvas id="scratchCanvas" class="scratch-canvas"></canvas>
     </div>
     <p class="success-quote" id="successQuote"></p>
-    <div class="hearts-burst"><span class="heart-ani">♥</span> <span class="heart-ani">♥</span> <span class="heart-ani">♥</span> <span class="heart-ani">♥</span> <span class="heart-ani">♥</span></div>
+    <div class="hearts-burst"><span class="heart-ani">♥</span></div>
   </div>
 
   <!-- Add your own romantic MP3 file as romantic-music.mp3 in this folder -->
@@ -445,7 +439,7 @@
       }, 300);
     }, 4000);
 
-    // No button runs away across the WHOLE SCREEN (laptop: cursor; mobile: touch)
+    // No button runs away across the WHOLE SCREEN but never on top of text (container)
     let noButtonFullScreen = false;
 
     function moveNoButton() {
@@ -453,16 +447,46 @@
       const noWidth = noRect.width;
       const noHeight = noRect.height;
       const margin = 20;
+      const textPadding = 15;
 
       if (!noButtonFullScreen) {
         btnNo.classList.add('fullscreen-runaway');
         noButtonFullScreen = true;
       }
 
+      const container = document.querySelector('.container');
+      const containerRect = container ? container.getBoundingClientRect() : null;
+      const avoidLeft = containerRect ? containerRect.left - textPadding : 0;
+      const avoidTop = containerRect ? containerRect.top - textPadding : 0;
+      const avoidRight = containerRect ? containerRect.right + textPadding : 0;
+      const avoidBottom = containerRect ? containerRect.bottom + textPadding : 0;
+
+      function overlapsText(x, y) {
+        return x + noWidth >= avoidLeft && x <= avoidRight && y + noHeight >= avoidTop && y <= avoidBottom;
+      }
+
       const maxX = window.innerWidth - noWidth - margin;
       const maxY = window.innerHeight - noHeight - margin;
-      const x = margin + Math.random() * Math.max(0, maxX - margin);
-      const y = margin + Math.random() * Math.max(0, maxY - margin);
+      let x, y;
+      for (let i = 0; i < 40; i++) {
+        x = margin + Math.random() * Math.max(0, maxX - margin);
+        y = margin + Math.random() * Math.max(0, maxY - margin);
+        if (!overlapsText(x, y)) break;
+      }
+      if (overlapsText(x, y)) {
+        var rightSpace = maxX - avoidRight - margin;
+        var bottomSpace = maxY - avoidBottom - margin;
+        if (rightSpace > noWidth) {
+          x = avoidRight + margin + Math.random() * (rightSpace - noWidth);
+          y = margin + Math.random() * Math.max(0, maxY - margin);
+        } else if (bottomSpace > noHeight) {
+          x = margin + Math.random() * Math.max(0, maxX - margin);
+          y = avoidBottom + margin + Math.random() * (bottomSpace - noHeight);
+        } else {
+          x = margin;
+          y = margin;
+        }
+      }
 
       btnNo.style.left = x + 'px';
       btnNo.style.top = y + 'px';
