@@ -468,14 +468,42 @@
       btnNo.style.top = y + 'px';
     }
 
-    btnNo.addEventListener('mouseenter', moveNoButton);
+    const noButtonPhrases = [
+      'Seriously?! 😤',
+      'Nice try! 😏',
+      'Nope, nope! 🏃‍♂️',
+      'Think again! 💕',
+      'Wrong button! 😅',
+      'I don\'t think so! 🙈',
+      'Try the other one! 👉',
+      'Oops! Wrong choice! 😜',
+      'C\'mon now! 😊',
+      'Yes is that way → 💖',
+      'Not this one! 🤭',
+      'Really?! 😄',
+      'The pink one! 💕',
+      'Nuh-uh! 😋',
+      'Yes please! 🥺',
+    ];
+
+    function showNoMessage() {
+      const msg = noButtonPhrases[Math.floor(Math.random() * noButtonPhrases.length)];
+      btnNo.textContent = msg;
+    }
+
+    btnNo.addEventListener('mouseenter', () => {
+      moveNoButton();
+      showNoMessage();
+    });
     btnNo.addEventListener('click', (e) => {
       e.preventDefault();
       moveNoButton();
+      showNoMessage();
     });
     btnNo.addEventListener('touchstart', (e) => {
       e.preventDefault();
       moveNoButton();
+      showNoMessage();
     }, { passive: false });
 
     // Create rose petals (long shower: more petals, slower fall, longer spawn)
